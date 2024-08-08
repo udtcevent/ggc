@@ -1,11 +1,7 @@
 <?php
 session_start();
-// echo '<pre>';
-//     print_r($_SESSION);
-// echo '</pre>';
 // Include Google calendar api handler class 
 include_once 'GoogleCalendarApi.class.php';
-// require_once 'google-calendar-api.php';
 // Include database configuration file 
 require_once '../bundles/conn.php';
 $statusMsg = '';
@@ -15,7 +11,7 @@ if (isset($_GET['code'])) {
     $GoogleCalendarApi = new GoogleCalendarApi();
 
     // Get event ID from session 
-    $event_id = ($_SESSION["eventID"] == "") ? $_GET["eventID"] : $_SESSION["eventID"];
+    $event_id = $_GET["eventID"];
 
     if (!empty($event_id)) {
         $qEventData = mysqli_query($conn, "SELECT
