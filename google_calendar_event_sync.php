@@ -1,8 +1,8 @@
 <?php
 session_start();
-echo '<pre>';
-    print_r($_SESSION);
-echo '</pre>';
+// echo '<pre>';
+//     print_r($_SESSION);
+// echo '</pre>';
 // Include Google calendar api handler class 
 include_once 'GoogleCalendarApi.class.php';
 // require_once 'google-calendar-api.php';
