@@ -3,7 +3,7 @@ session_start();
 // Include Google calendar api handler class 
 include_once 'GoogleCalendarApi.class.php';
 // Include database configuration file 
-require_once '../bundles/conn.php';
+require_once 'config.php';
 $statusMsg = '';
 $status = 'danger';
 if (isset($_GET['code'])) {
