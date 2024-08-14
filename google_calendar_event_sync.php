@@ -3,7 +3,10 @@ session_start();
 // Include Google calendar api handler class 
 include_once 'GoogleCalendarApi.class.php';
 // Include database configuration file 
-// require_once 'config.php';
+define('GOOGLE_CLIENT_ID', '746515951882-glui3k5rckb7uapa0pm44rpl6hv4vthm.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET', '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');
+define('GOOGLE_OAUTH_SCOPE', 'https://www.googleapis.com/auth/calendar');
+define('REDIRECT_URI', 'https://ggc-service-f8b2a7b65e09.herokuapp.com/google_calendar_event_sync.php');
 $statusMsg = '';
 $status = 'danger';
 if (isset($_GET['code'])) {
@@ -18,17 +21,6 @@ if (isset($_GET['code'])) {
     $eventEndDate = $_GET['eventEndDate'];
     $eventStartTime = $_GET['eventStartTime'];
     $eventEndTime = $_GET['eventEndTime'];
-
-    // Get event ID from session 
-    // $event_id = $_POST["eventID"];
-    // $eventTitle = $_POST['eventTitle'];
-    // $eventTypeName = $_POST['eventTypeName'];
-    // $eventLocation = $_POST['eventLocation'];
-    // $eventDetails = $_POST['eventDetails'];
-    // $eventStartDate = $_POST['eventStartDate'];
-    // $eventEndDate = $_POST['eventEndDate'];
-    // $eventStartTime = $_POST['eventStartTime'];
-    // $eventEndTime = $_POST['eventEndTime'];
 
     if (!empty($event_id)) {
         if (!empty($_GET['code'])) {
