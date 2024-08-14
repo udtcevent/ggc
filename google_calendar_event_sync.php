@@ -9,41 +9,40 @@ $status = 'danger';
 if (isset($_GET['code'])) {
     // Initialize Google Calendar API class 
     $GoogleCalendarApi = new GoogleCalendarApi();
+    $event_id = $_GET["eventID"];
+    $eventTitle = $_GET['eventTitle'];
+    $eventTypeName = $_GET['eventTypeName'];
+    $eventLocation = $_GET['eventLocation'];
+    $eventDetails = $_GET['eventDetails'];
+    $eventStartDate = $_GET['eventStartDate'];
+    $eventEndDate = $_GET['eventEndDate'];
+    $eventStartTime = $_GET['eventStartTime'];
+    $eventEndTime = $_GET['eventEndTime'];
 
     // Get event ID from session 
-    $event_id = $_GET["eventID"];
+    // $event_id = $_POST["eventID"];
+    // $eventTitle = $_POST['eventTitle'];
+    // $eventTypeName = $_POST['eventTypeName'];
+    // $eventLocation = $_POST['eventLocation'];
+    // $eventDetails = $_POST['eventDetails'];
+    // $eventStartDate = $_POST['eventStartDate'];
+    // $eventEndDate = $_POST['eventEndDate'];
+    // $eventStartTime = $_POST['eventStartTime'];
+    // $eventEndTime = $_POST['eventEndTime'];
 
     if (!empty($event_id)) {
-        $qEventData = mysqli_query($conn, "SELECT
-                                                ce.id AS id,
-                                                ce._event_title AS eventTitle,
-                                                ce._event_detail AS eventDetails,
-                                                ce._event_type_id AS eventTypeID,
-                                                ce._event_location AS eventLocation,
-                                                et._event_type_name AS eventTypeName,
-                                                ce._event_startdate AS eventStartDate,
-                                                ce._event_enddate AS eventEndDate,
-                                                ce._event_starttime AS eventStartTime,
-                                                ce._event_endtime AS eventEndTime,
-                                                ce._event_createdate AS eventCreateDate,
-                                                ce._user_create AS userCreate
-                                            FROM _calendar_event AS ce
-                                            LEFT JOIN _event_type AS et ON ce._event_type_id = et.id
-                                            WHERE ce.id = '" . $event_id . "'");
-        $eventData = mysqli_fetch_assoc($qEventData);
-
-        if (!empty($eventData)) {
+        if (!empty($_GET['code'])) {
             $calendar_event = array(
-                'summary' => ($eventData['eventTitle'] . '(' . $eventData['eventTypeName'] . ')'),
-                'location' => $eventData['eventLocation'],
-                'description' => $eventData['eventDetails']
+                'summary' => ($eventTitle . '(' . $eventTypeName . ')'),
+                'location' => $eventLocation,
+                'description' => $eventDetails
             );
 
             $event_datetime = array(
-                'event_date_start' => $eventData['eventStartDate'],
-                'event_date_end' => $eventData['eventEndDate'],
-                'start_time' => $eventData['eventStartTime'],
-                'end_time' => $eventData['eventEndTime']
+                'event_date_start' => $eventStartDate,
+                'event_date_end' => $eventEndDate,
+                'start_time' => $eventStartTime,
+                'end_time' => $eventEndTime
             );
 
             // Get the access token 
@@ -67,9 +66,9 @@ if (isset($_GET['code'])) {
                     //echo json_encode([ 'event_id' => $event_id ]); 
                     if ($google_event_id) {
                         // Update google event reference in the database 
-                        $qUpdateCLDEvent = mysqli_query($conn, "UPDATE _calendar_event SET google_calendar_event_id = '" . $event_id . "' WHERE id='" . $event_id . "'");
-                        $qCLDEvent = mysqli_query($conn, "SELECT * FROM _calendar_event WHERE id = '" . $event_id . "'");
-                        $rCLDEvent = mysqli_fetch_assoc($qCLDEvent);
+                        // $qUpdateCLDEvent = mysqli_query($conn, "UPDATE _calendar_event SET google_calendar_event_id = '" . $event_id . "' WHERE id='" . $event_id . "'");
+                        // $qCLDEvent = mysqli_query($conn, "SELECT * FROM _calendar_event WHERE id = '" . $event_id . "'");
+                        // $rCLDEvent = mysqli_fetch_assoc($qCLDEvent);
                         
                         echo '<script>window.close();</script>';
                     }
