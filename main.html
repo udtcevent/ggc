@@ -71,7 +71,8 @@
 
         $.ajax({
           type: "POST",
-          url: "bundles/login.php",
+          url: "bundles/loginFirebaseBD.php",
+          // url: "bundles/login.php",
           data: dataSend,
           dataType: "json",
           success: (result) => {
