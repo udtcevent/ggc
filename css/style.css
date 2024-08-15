@@ -1,0 +1,39 @@
+.badge-red {
+  background-color: red;
+  color: white;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.badge-blue {
+  background-color: blue;
+  color: white;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.badge-black {
+  background-color: black;
+  color: white;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.badge-gray {
+  background-color: gray;
+  color: black;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.badge-green {
+  background-color: green;
+  color: white;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 5px;
+}
