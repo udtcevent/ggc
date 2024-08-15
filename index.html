@@ -15,7 +15,7 @@
     <script>
       $(document).ready(() => {
         if (sessionStorage.length < 1) {
-          $("#loadForm").load("bundles/loadDataTableSummons.php");
+          $("#loadForm").load("bundles/loadIndexPage.php");
           $("#modalForm").load("bundles/modalForm.php?curPage=0");
         } else {
           const data = JSON.parse(sessionStorage.sess);
