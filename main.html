@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <meta name="google-signin-client_id" content="746515951882-ivss2cu63kgvbgb6l9bp0hk41kba800s.apps.googleusercontent.com.apps.googleusercontent.com"> -->
+    <title>
+      ระบบบริหารจัดการปฏิทินงานและการแจ้งเตือนผ่านไลน์ - UDTC Announcement
+    </title>
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://kit.fontawesome.com/48ae6a34dc.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Font Awesome 5 Iconic Font -->
+    <link
+      rel="stylesheet"
+      href="fontawesome-free-5.15.4-web/css/fontawesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="css/style.css"
+    />
+    <!-- Stylesheet -->
+    <link
+      rel="stylesheet"
+      href="boostrap-date-picker-master/css/datepicker.css"
+    />
+    <!-- JavaScript -->
+    <script src="boostrap-date-picker-master/js/datepicker.js"></script>
+    <!-- Languages -->
+    <script src="boostrap-date-picker-master/js/locales/th.js"></script>
+
+    <!-- STAY CONNECT GOOGLE AUTHENTICATION -->
+    <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+
+    <script>
+      $(document).ready(() => {
+        if (sessionStorage.length < 1) {
+          $("#mainForm").load("bundles/loginForm.php");
+        } else {
+          const data = JSON.parse(sessionStorage.sess);
+          $("#mainForm").load(
+            "bundles/formUploadFile.php?authen_id=" + data.authen_id
+          );
+          $("#loadTopBar").load(
+            "bundles/topBar.php?curPage=0&authen_id=" + data.authen_id
+          );
+          $("#modalForm").load(
+            "bundles/modalForm.php?curPage=0&authen_id=" + data.authen_id
+          );
+        }
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="modalForm" style="z-index: 100"></div>
+    <div id="loadTopBar" style="width: 100%"></div>
+    <div id="mainForm" style="width: 100%"></div>
+
+    <script>
+      ViewSummons = (id) => {
+        console.log("Hear");
+        $("#loadContentModalEditDataSummons").html("");
+        $("#loadContentModalEditDataSummons").load(
+          "bundles/modalEditDataSummons.php?id=" + id
+        );
+        $("#modalFormEditDataSummons").modal("show");
+      };
+
+      Login = () => {
+        const userName = $("#userName").val();
+        const passWord = $("#passWord").val();
+
+        const dataSend = {
+          username: userName,
+          password: passWord,
+        };
+
+        $.ajax({
+          type: "POST",
+          url: "bundles/login.php",
+          data: dataSend,
+          dataType: "json",
+          success: (result) => {
+            result.auth == false
+              ? setTimeout(() => {
+                  alert(result.message);
+                }, 0)
+              : setTimeout(() => {
+                  sessionStorage.sess = JSON.stringify({
+                    auth: result.auth,
+                    auth_level: result.auth_level,
+                    authen_id: result.authen_id,
+                  });
+
+                  const data = JSON.parse(sessionStorage.sess);
+                  const dataLineNotify = {
+                    'authen_id': data.authen_id,
+                    'auth_level': data.auth_level,
+                    'type': 1,
+                    'notifyType': 'login',
+                  };
+
+                  $.ajax({
+                    type: "POST",
+                    url: "bundles/lineNotifyBackEnd.php",
+                    data: dataLineNotify,
+                    dataType: "json",
+                    success: (res) => {
+                      if (res.auth == true) {
+                        console.log("ส่งค่าไปยัง Line Notify สำเร็จแล้ว");
+                      } else {
+                        console.log("ส่งค่าไปยัง Line Notify ไม่สำเร็จ");
+                      }
+                    },
+                  });
+
+                  window.location.replace("main.html");
+                }, 0);
+          },
+        });
+      };
+
+      SettingForm = () => {
+        const data = JSON.parse(sessionStorage.sess);
+        $("#loadContentMainView").html("");
+        $("#loadTopBar").html("");
+        $("#loadContentMainView").load(
+          "bundles/settingForm.php?curPage=1&authen_id=" + data.authen_id
+        );
+        $("#loadTopBar").load(
+          "bundles/topBar.php?curPage=1&authen_id=" + data.authen_id
+        );
+      };
+
+      SettingTab = (idTab) => {
+        const data = JSON.parse(sessionStorage.sess);
+        $("#loadBtnTabSetting").load(
+          "bundles/btnTabSetting.php?useTab=" + idTab
+        );
+        if (idTab == 1) {
+          $("#loadContentSetting").load(
+            "bundles/allUser.php?curPage=1&authen_id=" + data.authen_id
+          );
+        } else if (idTab == 2) {
+          $("#loadContentSetting").load(
+            "bundles/allPosition.php?curPage=2&authen_id=" + data.authen_id
+          );
+        } else if (idTab == 3) {
+          $("#loadContentSetting").load(
+            "bundles/allLevelPosition.php?curPage=3&authen_id=" + data.authen_id
+          );
+        } else {
+          $("#loadContentSetting").load(
+            "bundles/allCourt.php?curPage=4&authen_id=" +
+              data.authen_id +
+              "&tabID=1"
+          );
+        }
+      };
+
+      Back = (curPage) => {
+        const data = JSON.parse(sessionStorage.sess);
+        $("#mainForm").html("");
+        $("#loadTopBar").html("");
+        $("#mainForm").load(
+          "bundles/formUploadFile.php?authen_id=" + data.authen_id
+        );
+        $("#loadTopBar").load(
+          "bundles/topBar.php?curPage=" +
+            curPage +
+            "&authen_id=" +
+            data.authen_id
+        );
+      };
+
+      SignOut = () => {
+        const data = JSON.parse(sessionStorage.sess);
+
+        const dataSend = {
+                    'authen_id': data.authen_id,
+                    'auth_level': data.auth_level,
+                    'type': 2,
+                    'notifyType': 'login',
+        };
+        setTimeout(() => {
+          $.ajax({
+            type: "POST",
+            url: "bundles/lineNotifyBackEnd.php",
+            data: dataSend,
+            dataType: "json",
+            success: (res) => {
+              //
+            },
+          });
+          sessionStorage.clear();
+          window.location.replace("index.html");
+        }, 0);
+      };
+
+      ReviewTypeSearch = () => {
+        $("#reviewTypeSeach").html("");
+        if ($("#typeSearchDataSummons").val() < 3) {
+          $("#reviewTypeSeach").append(
+            `<div class="form-floating"><input type="text" id="searchSummons" class="form-control" style="width:100%;" placeholder="ระบุคำค้นหา..." /><label for="floatingInputGrid" style="color:#212121;">ระบุคำค้นหา...</label></div>`
+          );
+        } else {
+          $("#reviewTypeSeach").load("bundles/dataCourt.php");
+        }
+      };
+
+      SearchSummon = () => {
+        const data = JSON.parse(sessionStorage.sess);
+        const searchSummons = $("#searchSummons").val();
+        if (searchSummons == "") {
+          alert("กรุณากรอกข้อมูลก่อนดำเนินการค้นหา...");
+        } else {
+          const typeSearchDataSummons = $("select#typeSearchDataSummons").val();
+          const dataCheck = {
+            searchSummons:
+              typeSearchDataSummons < 3
+                ? searchSummons
+                : $("select#court").val(),
+            typeSearchDataSummons: typeSearchDataSummons,
+          };
+
+          $.ajax({
+            type: "POST",
+            url: "bundles/checkHasData.php",
+            data: dataCheck,
+            dataType: "json",
+            success: (result) => {
+              // console.log(result);
+              result.auth == false
+                ? setTimeout(() => {
+                    alert("ไม่พบข้อมูลคำค้นหาที่ท่านต้องการ...");
+                  }, 0)
+                : setTimeout(() => {
+                    $("#fetchDataSearch").load(
+                      "bundles/searchDataSummons.php?dataSearch=" +
+                        (typeSearchDataSummons < 3
+                          ? $("#searchSummons").val()
+                          : $("select#court").val()) +
+                        "&typeSearchDataSummons=" +
+                        typeSearchDataSummons +
+                        "&authen_id=" +
+                        data.authen_id
+                    );
+                  }, 0);
+            },
+          });
+        }
+      };
+
+      AddMoreSummon = (id) => {
+        const data = JSON.parse(sessionStorage.sess);
+        $("#loadContentModalAddMoreSummon").html("");
+        $("#loadContentModalAddMoreSummon").load(
+          "bundles/modalFormAddMoreSummon.php?id=" +
+            id +
+            "&authen_id=" +
+            data.authen_id
+        );
+        $("#modalFormAddMoreSummon").modal("show");
+      };
+
+      ShowCalendar = () => {
+        const data = JSON.parse(sessionStorage.sess);
+        if (data.auth_level == 1) {
+          window.open('https://calendar.google.com/calendar/u/0/r', '_blank');
+        } else {
+          window.open('https://calendar.google.com/calendar/embed?height=800&wkst=1&ctz=Asia%2FBangkok&bgcolor=%23ffffff&title=%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%81%E0%B8%88%E0%B9%89%E0%B8%87%E0%B9%80%E0%B8%95%E0%B8%B7%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%B4%E0%B8%88%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%A8%E0%B8%B2%E0%B8%A5%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AD%E0%B8%B8%E0%B8%94%E0%B8%A3%E0%B8%98%E0%B8%B2%E0%B8%99%E0%B8%B5&src=dWR0Y2V2ZW50QGdtYWlsLmNvbQ&color=%23039BE5', '_blank');
+        }
+      }
+    </script>
+  </body>
+</html>
