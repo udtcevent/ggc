@@ -1,5 +1,5 @@
 <?php
-include('conn.php');
+include('ggc/config.php');
 include('check.php');
 error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING);
 date_default_timezone_set('Asia/Bangkok');
