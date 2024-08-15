@@ -46,15 +46,13 @@ if (isset($_GET['code'])) {
                 $access_token = $data['access_token'];
                 $_SESSION['google_access_token'] = $access_token;
             }
-
+            echo $access_token;
             if (!empty($access_token)) {
                 try {
                     // Get the user's calendar timezone 
                     $user_timezone = $GoogleCalendarApi->GetUserCalendarTimezone($access_token);
-
                     // Create an event on the primary calendar 
                     $google_event_id = $GoogleCalendarApi->CreateCalendarEvent($access_token, 'primary', $calendar_event, 0, $event_datetime, $user_timezone);
-
                     //echo json_encode([ 'event_id' => $event_id ]); 
                     if ($google_event_id) {
                         // Update google event reference in the database 
