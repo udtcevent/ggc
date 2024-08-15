@@ -75,6 +75,7 @@
           data: dataSend,
           dataType: "json",
           success: (result) => {
+            console.log(result);
             result.auth == false
               ? setTimeout(() => {
                   alert(result.message);
