@@ -1,13 +1,3 @@
-<?php
-include('ggc/config.php');
-include('check.php');
-error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING);
-date_default_timezone_set('Asia/Bangkok');
-header('Content-Type: application/json');
-
-$today = date('Y-m-d');
-?>
-
 <table class="table table-striped" style="background-color:#212121; color:#fff;">
     <thead>
         <tr>
@@ -21,5 +11,3 @@ $today = date('Y-m-d');
         </tr>
     </thead>
 </table>
-
-<?php mysqli_close($conn); ?>
