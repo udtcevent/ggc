@@ -46,7 +46,7 @@ if (isset($_GET['code'])) {
                 $access_token = $data['access_token'];
                 $_SESSION['google_access_token'] = $access_token;
             }
-            echo $access_token;
+            // echo $access_token;
             if (!empty($access_token)) {
                 try {
                     // Get the user's calendar timezone 
