@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    ระบบบริหารจัดการปฏิทินงานและการแจ้งเตือนผ่านไลน์ - UDTC Announcement
+  </title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/48ae6a34dc.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script type="text/javascript">
+      $(document).ready(() => {
+        if (localStorage.sess != null) {
+          window.location.replace('addCalendarEvent.html')
+        }
+      });
+  </script>
+</head>
+
+<body>
+  <div id="loadTopBar" style="width: 100%">
+    <table class="table table-striped" style="background-color: #212121; color: #fff">
+      <thead>
+        <tr>
+          <th><button type="button" id="btnBack" class="btn btn-danger btn-lg" style="width: 100%; height:58px;">ย้อนกลับ</button></th>
+          <th style="width: 90%;"></th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div id="mainForm" style="width: 100%">
+    <section class="ftco-section">
+      <div class="container" style="padding-top: 5%">
+        <div class="row justify-content-center" style="background-color: #616161; color:#fff;">
+          <div class="col-md-6 text-center mb-5">
+            <h2 class="heading-section" style="padding-top: 20px;">
+              ระบบบริหารจัดการปฏิทินงานและการแจ้งเตือนผ่านไลน์<br />[ UDTC Announcement ]
+            </h2>
+          </div>
+        </div>
+
+        <div class="row justify-content-center" style="background-color: #616161; color:#fff; margin-top: -50px">
+          <div class="col-md-6 col-lg-5">
+            <div class="login-wrap p-4 p-md-5">
+              <form action="#" class="login-form">
+                <div class="form-group">
+                  <input type="text" id="userName" class="form-control rounded-left" placeholder="Email" />
+                </div>
+                <br />
+                <div class="form-group d-flex">
+                  <input type="password" id="passWord" class="form-control rounded-left" placeholder="Password" />
+                </div>
+                <br />
+                <div class="row">
+                  <div class="col-6">
+                    <button type="button" id="btnLogin" class="btn btn-success btn-lg" style="width: 100%"><i class="fa fa-sign-in"></i> เข้าสู่ระบบ</button>
+                  </div>
+                  <div class="col-6">
+                    <button type="button" id="btnRegister" class="btn btn-primary btn-lg" style="width: 100%"><i class="fa fa-registered"></i> ลงทะเบียน</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXuyGGsox3SfxIKNcV9l9TdgvJSmJ29Gc",
+      authDomain: "e-announce-cbadd.firebaseapp.com",
+      databaseURL: "https://e-announce-cbadd-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "e-announce-cbadd",
+      storageBucket: "e-announce-cbadd.appspot.com",
+      messagingSenderId: "346672324711",
+      appId: "1:346672324711:web:210d2061ab078b1e9f34c2",
+      measurementId: "G-C6X5CD7P0P"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    import { getDatabase, ref, child, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+    const db = getDatabase();
+
+    let userName = document.getElementById('userName');
+    let passWord = document.getElementById('passWord');
+
+    let resultLogin = document.getElementById('resultLogin');
+
+    function clearThis(target) {
+      if (target.value != '') {
+        target.value = "";
+      }
+    }
+
+    clearThis(userName);
+    clearThis(passWord);
+
+    // Hash data encoding
+    function stringToHash(string) {
+      var hash = 0;
+      if (string.length == 0) return hash;
+
+      for (var i = 0; i < string.length; i++) {
+        var char = string.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+
+      return hash;
+    }
+
+    function chkLogin() {
+      const dbRef = ref(db);
+      let partUser = 'users/' + stringToHash(userName.value + passWord.value);
+
+      get(child(dbRef, partUser)).then((snapshot) => {
+          if (snapshot.exists()) {
+            let snap = snapshot.val();
+            get(child(dbRef, partUser + '/authenticated')).then((authchk) => {
+              let auth = authchk.val();
+              if (authchk.exists()) {
+                localStorage.sess = JSON.stringify({ SECRET_ID : stringToHash(userName.value + passWord.value).toString(), secretAuth : auth.secretAuth.toString()});
+                alert(`ยินดีต้อนรับ ${snap.nameofUser.FrontName}${snap.nameofUser.fName}  ${snap.nameofUser.lName} เข้าสู่ระบบ`);
+                window.location.replace(`addCalendarEvent.html`)
+              }
+            }).catch((error) => {
+              console.log(error);
+              alert(`ไม่พบข้อมูลชื่อผู้ใช้งาน ${userName.value} นี้ในระบบ`);
+            });
+          } 
+      }).catch((err) => {
+        console.log(err);
+        alert(`ไม่พบข้อมูลชื่อผู้ใช้งาน ${userName.value} นี้ในระบบ`);
+      });
+    }
+
+    const btnLogin = document.addEventListener('click', chkLogin);
+  </script>
+
+  <script>
+    const btnBack = document.getElementById("btnBack");
+    const btnRegister = document.getElementById("btnRegister");
+
+    btnBack.addEventListener('click', () => {
+      window.location.replace('index.html')
+    });
+
+    btnRegister.addEventListener('click', () => {
+      window.location.replace('register.html')
+    });
+  </script>
+</body>
+
+</html>
