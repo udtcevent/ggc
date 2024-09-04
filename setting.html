@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        ระบบบริหารจัดการปฏิทินงานและการแจ้งเตือนผ่านไลน์ - Setting Page
+    </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/48ae6a34dc.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="text/javascript">
+        $(document).ready(() => {
+            if (localStorage.sess == null) {
+                window.location.replace('main.html');
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="modal" style="width: 100%;"></div>
+    <div id="loadTopBar" style="width: 100%">
+        <table class="table table-striped" style="background-color: #212121; color: #fff">
+            <thead>
+                <tr>
+                    <th style="width: 10%;"><button type="button" id="btnBack" class="btn btn-danger btn-lg" style="width: 100%; height:58px;">ย้อนกลับ</button></th>
+                    <th style="width: 50%; vertical-align:middle; font-weight: bold; font-size:16px;"><a href="#" style="text-decoration: none; color:#fff; font-size:20px;">SETTING PAGE - หน้าตั้งค่าระบบ</a></th>
+                    <th style="width: 20%"><button type="button" id="btnShowCalendar" class="btn btn-success btn-lg" style="width: 100%"><i class="fa fa-calendar"></i> แสดงปฏิทินกิจกรรม</button></th>
+                    <th style="width: 20%"><button type="button" id="btnSignOut" class="btn btn-danger btn-lg" style="width: 100%"><i class="fa fa-sign-out"></i> ออกจากระบบ</button></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXuyGGsox3SfxIKNcV9l9TdgvJSmJ29Gc",
+            authDomain: "e-announce-cbadd.firebaseapp.com",
+            databaseURL: "https://e-announce-cbadd-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-announce-cbadd",
+            storageBucket: "e-announce-cbadd.appspot.com",
+            messagingSenderId: "346672324711",
+            appId: "1:346672324711:web:210d2061ab078b1e9f34c2",
+            measurementId: "G-C6X5CD7P0P"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        import { getDatabase, ref, child, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+        const db = getDatabase();
+
+        let btnShowCalendar = document.getElementById('btnShowCalendar');
+        let btnBack = document.getElementById('btnBack');
+
+        const CheckViewSettingButton = () => {
+            const dbRef = ref(db);
+            const data = JSON.parse(localStorage.sess);
+
+            let partUser = 'users/' + data.SECRET_ID;
+
+            get(child(dbRef, partUser)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    let snap = snapshot.val();
+                    get(child(dbRef, partUser + '/authenticated')).then((authchk) => {
+                        let auth = authchk.val();
+                        if (authchk.exists()) {
+                            btnShowCalendar.addEventListener('click', () => {
+                                ShowCalendarEvent();
+                            });
+                        }
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
+
+        // Show Calendar Event
+        const ShowCalendarEvent = () => {
+            const data = JSON.parse(localStorage.sess);
+            const dbRef = ref(db);
+            const pathUser = 'users/' + data.SECRET_ID;
+
+            get(child(dbRef, pathUser + '/authenticated')).then((uSer) => {
+                if (uSer.exists()) {
+                    const chkAuth = uSer.val().authLevel;
+                    if (chkAuth == "ผู้ดูแลระบบ") {
+                        window.open('https://calendar.google.com/calendar/', '_blank');
+                    } else {
+                        window.open('https://calendar.google.com/calendar/embed?height=800&wkst=1&ctz=Asia%2FBangkok&bgcolor=%23ffffff&title=%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%81%E0%B8%88%E0%B9%89%E0%B8%87%E0%B9%80%E0%B8%95%E0%B8%B7%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%B4%E0%B8%88%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%A8%E0%B8%B2%E0%B8%A5%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AD%E0%B8%B8%E0%B8%94%E0%B8%A3%E0%B8%98%E0%B8%B2%E0%B8%99%E0%B8%B5&src=dWR0Y2V2ZW50QGdtYWlsLmNvbQ&color=%23039BE5', '_blank');
+                    }
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
+
+        const BackPage = () => {
+            window.location.replace('addCalendarEvent.html')
+        }
+
+        btnBack.addEventListener('click', BackPage);
+        btnShowCalendar.addEventListener('click', ShowCalendarEvent);
+        window.addEventListener('load', CheckViewSettingButton);
+    </script>
+</body>
+
+</html>
